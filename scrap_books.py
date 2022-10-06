@@ -1,6 +1,6 @@
-from unicodedata import category
 import requests
 from bs4 import BeautifulSoup
+import csv
 
 # url de la page
 page_url = "http://books.toscrape.com/catalogue/the-dirty-little-secrets-of-getting-your-dream-job_994/index.html"
@@ -69,4 +69,14 @@ upc = book_informations[0]
 price_excl = book_informations[2]    
 price_incl = book_informations[3]    
 num_available = book_informations[5]    
-rev_rating = book_informations[6]    
+rev_rating = book_informations[6]
+
+# création d'en-tête
+headers_data = ["category","product_page_url", "title", "product_description", "universal_product_code", "price_excluding_tax", "price_including_tax", "number_available", "review_rating", "image_url"]
+data_list = [get_caterogy(), get_book_url(), get_title(), get_description(), upc, price_excl, price_incl, num_available, rev_rating, get_image_url()]
+
+# écrire les données dans un fichier csv
+with open("data_book.csv", "w") as file_csv:
+    writer = csv.writer(file_csv)
+    writer.writerow(headers_data)
+    writer.writerow(data_list)
