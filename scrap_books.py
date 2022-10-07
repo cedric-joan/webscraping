@@ -3,17 +3,16 @@ from bs4 import BeautifulSoup
 import csv
 
 # url de la page
-page_url = "http://books.toscrape.com/catalogue/the-dirty-little-secrets-of-getting-your-dream-job_994/index.html"
+page_book_url = "http://books.toscrape.com/catalogue/the-dirty-little-secrets-of-getting-your-dream-job_994/index.html"
 
 # requête pour accéder à la page du livre
-def get_content_page():
-    reponse = requests.get(page_url)
-    page = reponse.content
-    return page
-get_content_page()
+def get_content_page_book():
+    reponse = requests.get(page_book_url)
+    page_book = reponse.content
+    return page_book
 
 # parser la page
-soup = BeautifulSoup(get_content_page(), "html.parser")
+soup = BeautifulSoup(get_content_page_book(), "html.parser")
 
 # catégorie du livre
 def get_caterogy():
@@ -31,7 +30,7 @@ def get_book_url():
     book_links = []
     for anchor in anchors:
         link = anchor["href"]
-        link = requests.compat.urljoin(page_url, link)
+        link = requests.compat.urljoin(page_book_url, link)
         book_links.append(link)
     return book_links[3]
 get_book_url() 
@@ -40,9 +39,9 @@ get_book_url()
 def get_image_url():
     image = soup.select("img")
     src = image[0]["src"]
-    src = requests.compat.urljoin(page_url, src)
+    src = requests.compat.urljoin(page_book_url,src)
     img_url = src
-    return img_url   
+    return img_url 
 get_image_url()    
 
 # titre du livre
@@ -61,22 +60,79 @@ def get_description():
 get_description()
 
 # informations du livre
-informations = soup.find_all("td")
-book_informations = []
-for information in informations:
-    book_informations.append(information.text)
-upc = book_informations[0]    
-price_excl = book_informations[2]    
-price_incl = book_informations[3]    
-num_available = book_informations[5]    
-rev_rating = book_informations[6]
+def get_informations():
+    informations = soup.find_all("td")
+    book_informations = []
+    for information in informations:
+        book_informations.append(information.text)
+    return book_informations
+
+def get_upc():
+    univers = get_informations()
+    return univers[0]
+get_upc()
+
+def get_price_excl():
+    price_ex = get_informations()
+    return price_ex[2]
+get_price_excl()  
+
+def get_price_in():
+    price_in = get_informations()
+    return price_in[3]
+get_price_in()
+
+def get_num_available():
+    num_av = get_informations()
+    return num_av[5]
+get_num_available()
+
+def get_rev_rating():
+    rev_rating = get_informations()
+    return rev_rating[6]
+get_rev_rating() 
+
 
 # création d'en-tête
-headers_data = ["category","product_page_url", "title", "product_description", "universal_product_code", "price_excluding_tax", "price_including_tax", "number_available", "review_rating", "image_url"]
-data_list = [get_caterogy(), get_book_url(), get_title(), get_description(), upc, price_excl, price_incl, num_available, rev_rating, get_image_url()]
+headers_data = ["product_page_url","category", "title", "product_description", "universal_product_code", "price_excluding_tax", "price_including_tax", "number_available", "review_rating", "image_url"]
+data_list = [get_book_url(),get_caterogy(), get_title(), get_description(), get_upc(), get_price_excl(), get_price_in(), get_num_available(), get_rev_rating(), get_image_url()]
+
+
+page_category_url = "http://books.toscrape.com/catalogue/category/books/music_14/index.html"
+
+# requête pour accéder à la page d'une catégorie
+def get_content_page_category():
+    reponse = requests.get(page_category_url)
+    page_category = reponse.content
+    return page_category
+
+soup_category = BeautifulSoup(get_content_page_category(), "html.parser")
+
+# urls des livres d'une catégorie
+def get_all_books_urls():
+    anchors = soup_category.find_all("div", class_="image_container")
+    book_links = []
+    for anchor in anchors:
+        links = anchor.find("a")["href"]
+        links = requests.compat.urljoin(page_category_url, links)
+        book_links.append(links)
+    return book_links
+
+pages = get_all_books_urls()
+for page in pages:
+    r = requests.get(page)
+    soup = BeautifulSoup(r.content, "html.parser")
+    page = get_title(), get_description(), get_upc(), get_price_excl(), get_price_in(), get_num_available(), get_rev_rating(), get_image_url()
+    all_books = []
+    all_books.append(page)
+    print(all_books)    
 
 # écrire les données dans un fichier csv
-with open("data_book.csv", "w") as file_csv:
-    writer = csv.writer(file_csv)
-    writer.writerow(headers_data)
-    writer.writerow(data_list)
+# with open("data_book.csv", "w") as file_csv:
+#     writer = csv.writer(file_csv)
+    # writer.writerow(headers_data)
+    # writer.writerow(data_list)
+    # urls = get_all_books_urls()
+    # for url in urls:
+    #     file_csv.write(f"{url}\n")
+    # writer.writerow(page)
