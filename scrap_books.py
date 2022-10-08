@@ -92,12 +92,6 @@ def get_rev_rating():
     return rev_rating[6]
 get_rev_rating() 
 
-
-# création d'en-tête
-headers_data = ["product_page_url","category", "title", "product_description", "universal_product_code", "price_excluding_tax", "price_including_tax", "number_available", "review_rating", "image_url"]
-data_list = [get_book_url(),get_caterogy(), get_title(), get_description(), get_upc(), get_price_excl(), get_price_in(), get_num_available(), get_rev_rating(), get_image_url()]
-
-
 page_category_url = "http://books.toscrape.com/catalogue/category/books/music_14/index.html"
 
 # requête pour accéder à la page d'une catégorie
@@ -118,27 +112,39 @@ def get_all_books_urls():
         book_links.append(links)
     return book_links
 
+# création d'en-tête
+headers_data = ["product_page_url","category", "title", "product_description", "universal_product_code", "price_excluding_tax", "price_including_tax", "number_available", "review_rating", "image_url"]
+data_list = [get_book_url(),get_caterogy(), get_title(), get_description(), get_upc(), get_price_excl(), get_price_in(), get_num_available(), get_rev_rating(), get_image_url()]
+
 # écrire les données dans un fichier csv
-with open("data_book.csv", "w") as file_csv:
-    writer = csv.writer(file_csv, delimiter=",")
-    writer.writerow(headers_data)
-    writer.writerow(data_list)
-    books = get_all_books_urls()
-    for book in books:
-        r = requests.get(book)
-        soup = BeautifulSoup(r.content, "html.parser")
-        book = [ get_book_url(), get_caterogy(), get_title(), get_description(), get_upc(), get_price_excl(), get_price_in(), get_num_available(), get_rev_rating(), get_image_url()]
-        books_list = book
-        writer.writerow(books_list)
+# with open("data_book.csv", "w") as file_csv:
+#     writer = csv.writer(file_csv, delimiter=",")
+#     writer.writerow(headers_data)
+#     writer.writerow(data_list)
+#     books = get_all_books_urls()
+#     for book in books:
+#         r = requests.get(book)
+#         soup = BeautifulSoup(r.content, "html.parser")
+#         book = [ get_book_url(), get_caterogy(), get_title(), get_description(), get_upc(), get_price_excl(), get_price_in(), get_num_available(), get_rev_rating(), get_image_url()]
+#         books_list = book
+#         writer.writerow(books_list)
 
 
-        # urls = get_all_books_urls()
-        # for url in urls:
-        #     url = book
-        #     writer.writerow(url)
+def get_all_categories():
+    anc = soup_category.find("ul", class_="nav")
+    links = anc.find_all("a")
+    for link in links:
+        links_categories = []
+        liens = link["href"]
+        liens = requests.compat.urljoin(page_category_url, liens)
+        links_categories.append(liens)
+    return links_categories
+
+
+
+get_all_categories()        
 
 
 
 
 
-        # file_csv.write(f"{url}\n")
