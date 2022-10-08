@@ -118,21 +118,27 @@ def get_all_books_urls():
         book_links.append(links)
     return book_links
 
-pages = get_all_books_urls()
-for page in pages:
-    r = requests.get(page)
-    soup = BeautifulSoup(r.content, "html.parser")
-    page = get_title(), get_description(), get_upc(), get_price_excl(), get_price_in(), get_num_available(), get_rev_rating(), get_image_url()
-    all_books = []
-    all_books.append(page)
-    print(all_books)    
-
 # écrire les données dans un fichier csv
-# with open("data_book.csv", "w") as file_csv:
-#     writer = csv.writer(file_csv)
-    # writer.writerow(headers_data)
-    # writer.writerow(data_list)
-    # urls = get_all_books_urls()
-    # for url in urls:
-    #     file_csv.write(f"{url}\n")
-    # writer.writerow(page)
+with open("data_book.csv", "w") as file_csv:
+    writer = csv.writer(file_csv, delimiter=",")
+    writer.writerow(headers_data)
+    writer.writerow(data_list)
+    books = get_all_books_urls()
+    for book in books:
+        r = requests.get(book)
+        soup = BeautifulSoup(r.content, "html.parser")
+        book = [ get_book_url(), get_caterogy(), get_title(), get_description(), get_upc(), get_price_excl(), get_price_in(), get_num_available(), get_rev_rating(), get_image_url()]
+        books_list = book
+        writer.writerow(books_list)
+
+
+        # urls = get_all_books_urls()
+        # for url in urls:
+        #     url = book
+        #     writer.writerow(url)
+
+
+
+
+
+        # file_csv.write(f"{url}\n")
