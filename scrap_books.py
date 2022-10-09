@@ -1,3 +1,4 @@
+from urllib import response
 import requests
 from bs4 import BeautifulSoup
 import csv
@@ -129,20 +130,65 @@ data_list = [get_book_url(),get_caterogy(), get_title(), get_description(), get_
 #         books_list = book
 #         writer.writerow(books_list)
 
+# extraction de toutes les urls de toutes les catégories de la page d'accueil
+home_page_url = "http://books.toscrape.com"
+
+def get_content_home_page():
+    reponse = requests.get(home_page_url)
+    home_page_category = reponse.content
+    return home_page_category
+
+soup_home = BeautifulSoup(get_content_home_page(), "html.parser")    
 
 def get_all_categories():
-    anc = soup_category.find("ul", class_="nav")
+    anc = soup_home.find("ul", class_="nav")
     links = anc.find_all("a")
+    links_categories = []
     for link in links:
-        links_categories = []
         liens = link["href"]
-        liens = requests.compat.urljoin(page_category_url, liens)
+        liens = requests.compat.urljoin(home_page_url, liens)
         links_categories.append(liens)
     return links_categories
 
+def travel_category_url():
+    travel_link = get_all_categories()
+    return travel_link[1]
+travel_category_url()    
+
+# écrire les données pour chaque catégorie dans un fichier
+with open("travel_category.csv", "w") as file_csv:
+    writer = csv.writer(file_csv, delimiter=",")
+    writer.writerow(headers_data)
+    travels = travel_category_url()
+    res = requests.get(travels)
+    soup_category = BeautifulSoup(res.content, "html.parser")
+    travels = get_all_books_urls()
+    for travel in travels:
+        r = requests.get(travel)
+        soup = BeautifulSoup(r.content, "html.parser")
+        travel = [ get_book_url(), get_caterogy(), get_title(), get_description(), get_upc(), get_price_excl(), get_price_in(), get_num_available(), get_rev_rating(), get_image_url()]
+        writer.writerow(travel)
 
 
-get_all_categories()        
+
+
+# for category in categories:
+#     res = requests.get(category)
+#     soup_category = BeautifulSoup(res.content, "html.parser")
+#     category = get_all_books_urls()
+#     print(category)
+
+# écrire les données pour chaque catégorie dans un fichier
+# with open("data_category.csv", "w") as file_csv:
+#     writer = csv.writer(file_csv, delimiter=",")
+#     writer.writerow(headers_data)
+#     categories = get_all_categories()
+#     for category in categories:
+#         res = requests.get(category)
+#         soup_home = BeautifulSoup(res.content, "html.parser")
+#         category = [get_book_url(),get_caterogy(),get_description(),get_image_url()]
+#         # print(soup)
+#         writer.writerow(category)
 
 
 
