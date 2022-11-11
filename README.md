@@ -9,6 +9,12 @@ Nous allons extraire et enregistrer les données d'un site web. Nous cherchons �
 - extraire toutes les livres de toutes les catégories et enregistrer toutes les données dans un fichier.
 - télécharger les images de tous les livres de toutes les catégories et les sauvegarder localement.
 
+# Tester le projet
+
+Lancer votre terminal et clonez le projet:
+
+    git clone https://github.com/cedric-joan/webscraping.git
+
 
 # Installation des paquets
 
